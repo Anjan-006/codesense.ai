@@ -1,0 +1,36 @@
+# ─── IDE ─────────────────────────────────
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+
+# ─── Java / Maven ────────────────────────
+backend/target/
+*.class
+*.jar
+*.war
+*.log
+
+# ─── Node / Frontend ─────────────────────
+frontend/node_modules/
+frontend/dist/
+frontend/.cache/
+
+# ─── OS ──────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ─── Environment ─────────────────────────
+.env
+.env.local
+.env.production
+*.env
+
+# ─── Docker ──────────────────────────────
+docker-compose.override.yml
+
+# ─── Uploads ─────────────────────────────
+uploads/
+storage/
