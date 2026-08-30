@@ -194,10 +194,23 @@ public class ProjectService {
     private String callGeminiChat(String apiKey, String model, String context, String userQuery) throws Exception {
         java.net.http.HttpClient client = java.net.http.HttpClient.newHttpClient();
         
-        String systemPrompt = "You are CodeSense AI, an expert senior software engineer and assistant. " +
-                "Your task is to help the user understand their codebase. Use the codebase context provided to give detailed, " +
-                "accurate answers with code references where appropriate.\n\n" +
-                "CONTEXT:\n" + context;
+        String systemPrompt = "You are CodeSense AI, an intelligent code analysis assistant designed to help software engineers " +
+                "understand and navigate complex codebases efficiently.\\n\\n" +
+                "TARGET AUDIENCE: Computer science students and software developers with foundational programming knowledge.\\n\\n" +
+                "RESPONSE GUIDELINES:\\n" +
+                "- Use precise technical terminology appropriate for CS students (e.g., dependency injection, polymorphism, " +
+                "RESTful architecture, ORM, middleware, design patterns).\\n" +
+                "- Provide structured, well-organized responses using markdown headers (## and ###) and bullet points.\\n" +
+                "- When explaining code, describe the architectural intent, design pattern employed, and how the component " +
+                "fits within the overall system architecture.\\n" +
+                "- Reference relevant software engineering principles (SOLID, DRY, separation of concerns, etc.) where applicable.\\n" +
+                "- Include code snippets using properly formatted markdown code blocks (```language) with concise inline comments.\\n" +
+                "- Explain control flow, data flow, and inter-component dependencies clearly.\\n" +
+                "- When discussing trade-offs or design decisions, present the rationale objectively.\\n" +
+                "- Provide complete, technically accurate answers — do not oversimplify or omit important implementation details.\\n" +
+                "- Maintain a professional, concise tone throughout. Avoid informal language, emojis, and unnecessary analogies.\\n" +
+                "- Where relevant, mention time/space complexity, scalability considerations, or potential improvements.\\n\\n" +
+                "CODEBASE CONTEXT:\\n" + context;
 
         String payload = String.format(
             "{\"model\": %s, \"messages\": [" +
@@ -312,12 +325,12 @@ public class ProjectService {
         
         if (msg.contains("structure") || msg.contains("file") || msg.contains("folders")) {
             StringBuilder sb = new StringBuilder();
-            sb.append("### 📂 Codebase Structure & File Tree\n\n");
-            sb.append("Here is the parsed layout of the project files:\n\n");
+            sb.append("### Project Structure Overview\n\n");
+            sb.append("The following source files were identified during project indexing:\n\n");
             for (ProjectFile f : files) {
                 sb.append("*   `").append(f.getFilePath()).append("` (").append(f.getLanguage()).append(", ").append(f.getLinesOfCode()).append(" lines)\n");
             }
-            sb.append("\nThis structure suggests a standard layout of a ").append(files.get(0).getLanguage()).append(" project.");
+            sb.append("\nThis structure is consistent with a standard ").append(files.get(0).getLanguage()).append(" project layout.");
             return sb.toString();
         }
         
@@ -329,19 +342,19 @@ public class ProjectService {
                 .findFirst()
                 .orElse(files.get(0));
                 
-            return "### 💡 Codebase Explanation\n\n" +
-                   "Here is an overview of the codebase centered on your file `" + codeFile.getFilePath() + "`:\n\n" +
-                   "1.  **Main Logic**: The primary configurations and scripts are defined in `" + codeFile.getFileName() + "`.\n" +
-                   "2.  **Implementation**: It is developed using **" + codeFile.getLanguage() + "**.\n" +
-                   "3.  **Highlights**: It includes structured codebase variables and styling classes.\n\n" +
-                   "*(Note: This local mock explanation is served because the configured Gemini API key has exceeded its quota. Please check your Gemini API quota/billing for full answers!)*";
+            return "### Codebase Analysis\n\n" +
+                   "Based on the indexed source files, here is an overview centered on `" + codeFile.getFilePath() + "`:\n\n" +
+                   "1.  **Core Logic**: The primary configurations and application logic reside in `" + codeFile.getFileName() + "`.\n" +
+                   "2.  **Language**: The implementation uses **" + codeFile.getLanguage() + "**.\n" +
+                   "3.  **Observations**: The file contains structured definitions, configuration parameters, and modular components.\n\n" +
+                   "*(Note: This is a locally generated response. The Gemini API key has exceeded its quota. Please verify your API quota or billing configuration for full AI-powered analysis.)*";
         }
         
-        return "### 🤖 CodeSense AI Assistant\n\n" +
-               "I scanned the project files, but I couldn't query Gemini because your API key is out of credits (429 quota exceeded).\n\n" +
-               "Here is some codebase metadata I parsed locally:\n" +
-               "*   Total Source Files: **" + files.size() + "**\n" +
-               "*   Primary Language: **" + (files.isEmpty() ? "None" : files.get(0).getLanguage()) + "**\n\n" +
-               "Please check your Gemini API account to unlock dynamic, conversational chat responses!";
+        return "### CodeSense AI — Fallback Response\n\n" +
+               "The AI inference service is currently unavailable due to API quota limits (HTTP 429).\n\n" +
+               "The following metadata was extracted from the local index:\n" +
+               "*   **Total Source Files**: " + files.size() + "\n" +
+               "*   **Primary Language**: " + (files.isEmpty() ? "N/A" : files.get(0).getLanguage()) + "\n\n" +
+               "Please check your Gemini API account and ensure sufficient quota is available to enable full conversational analysis.";
     }
 }

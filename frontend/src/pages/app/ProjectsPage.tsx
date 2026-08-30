@@ -18,6 +18,7 @@ const statusConfig = {
   READY:      { label: 'Ready',      icon: CheckCircle2, color: 'var(--green-600)', bg: 'var(--green-100)' },
   UPLOADING:  { label: 'Uploading',  icon: Loader2,      color: '#3b82f6',          bg: '#dbeafe' },
   PROCESSING: { label: 'Indexing',   icon: Loader2,      color: '#f59e0b',          bg: '#fef3c7' },
+  INDEXING:   { label: 'Indexing',   icon: Loader2,      color: '#f59e0b',          bg: '#fef3c7' },
   FAILED:     { label: 'Failed',     icon: AlertCircle,  color: '#ef4444',          bg: '#fee2e2' },
   DELETED:    { label: 'Deleted',    icon: AlertCircle,  color: '#6b7280',          bg: '#f3f4f6' },
 };
@@ -217,7 +218,7 @@ function ProjectCard({ project, onDelete }: { project: Project; onDelete: (id: s
   const { setActiveProject } = useProjectStore();
   const cfg = statusConfig[project.status] ?? statusConfig.FAILED;
   const StatusIcon = cfg.icon;
-  const isAnimated = project.status === 'UPLOADING' || project.status === 'PROCESSING';
+  const isAnimated = project.status === 'UPLOADING' || project.status === 'PROCESSING' || project.status === 'INDEXING';
 
   return (
     <motion.div
@@ -265,7 +266,7 @@ function ProjectCard({ project, onDelete }: { project: Project; onDelete: (id: s
       </div>
 
       {/* Progress bar if indexing */}
-      {(project.status === 'UPLOADING' || project.status === 'PROCESSING') && (
+      {(project.status === 'UPLOADING' || project.status === 'PROCESSING' || project.status === 'INDEXING') && (
         <div style={{ background: 'var(--bg)', borderRadius: 99, height: 6, boxShadow: 'inset -2px -2px 5px var(--shadow-light), inset 2px 2px 5px var(--shadow-dark)' }}>
           <div style={{
             height: '100%', borderRadius: 99,
@@ -349,6 +350,13 @@ export default function ProjectsPage() {
     queryKey: ['projects'],
     queryFn: () => projectApi.listProjects(),
     select: r => r.data.data,
+    refetchInterval: (query) => {
+      const projects = query.state.data?.content ?? [];
+      const hasActiveJobs = projects.some(
+        (p: any) => p.status === 'UPLOADING' || p.status === 'PROCESSING' || p.status === 'INDEXING'
+      );
+      return hasActiveJobs ? 3000 : false;
+    },
   });
 
   const deleteMutation = useMutation({

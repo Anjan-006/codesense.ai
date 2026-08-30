@@ -1,6 +1,6 @@
 // ── Project types ──────────────────────────────────────────────
 
-export type ProjectStatus = 'UPLOADING' | 'PROCESSING' | 'READY' | 'FAILED' | 'DELETED';
+export type ProjectStatus = 'UPLOADING' | 'PROCESSING' | 'INDEXING' | 'READY' | 'FAILED' | 'DELETED';
 export type SourceType = 'ZIP_UPLOAD' | 'GITHUB';
 
 export interface Project {

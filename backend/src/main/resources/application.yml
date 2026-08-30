@@ -6,6 +6,19 @@ spring:
   application:
     name: codesense-ai
 
+  # ─── DataSource ──────────────────────────────────────────
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/codesense_db}
+    username: ${SPRING_DATASOURCE_USERNAME:codesense}
+    password: ${SPRING_DATASOURCE_PASSWORD:codesense_secret}
+    driver-class-name: org.postgresql.Driver
+
+  # ─── Redis ──────────────────────────────────────────────
+  data:
+    redis:
+      host: ${SPRING_DATA_REDIS_HOST:localhost}
+      port: ${SPRING_DATA_REDIS_PORT:6379}
+
   # ─── JPA / Hibernate ───────────────────────────────────────
   jpa:
     hibernate:
